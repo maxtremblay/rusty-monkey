@@ -21,14 +21,14 @@ impl<'a> Iterator for TokenIter<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         self.input.next().map(|character| match character {
-            c if Self::is_symbol(c) => Token::from_symbol(c),
+            c if Self::is_delimiter(c) => Token::from_delimiter(c),
             invalid_literal => Token::invalid_with_literal(invalid_literal.to_string()),
         })
     }
 }
 
 impl<'a> TokenIter<'a> {
-    fn is_symbol(character: char) -> bool {
-        vec!['=', '+', ';', ',', '(', ')', '{', '}'].contains(&character)
+    fn is_delimiter(character: char) -> bool {
+        vec![';', ',', '(', ')', '{', '}'].contains(&character)
     }
 }

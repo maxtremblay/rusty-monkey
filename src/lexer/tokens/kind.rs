@@ -1,26 +1,50 @@
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
 pub enum TokenKind {
-    // Identifiers and literals
+    Delimiter(Delimiter),
     Identifier,
-    Integer,
+    Invalid,
+    Keyword(Keyword),
+    Literal(Literal),
+    Operators(Operators),
+}
 
-    // Operators
-    Assignment,
-    Plus,
-
-    // Delimiters
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
+pub enum Delimiter {
     Comma,
-    Semicolon,
+    SemiColon,
     LeftParenthesis,
     RightParenthesis,
     LeftBrace,
     RightBrace,
+}
 
-    // Keywords
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
+pub enum Keyword {
     Function,
     Let,
+}
 
-    // Specials
-    Invalid,
-    EndOfFile,
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
+pub enum Literal {
+    Integer,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
+pub enum Operators {
+    Assignement,
+    Plus,
+}
+
+impl TokenKind {
+    pub fn from_delimiter(delimiter: char) -> Self {
+        match delimiter {
+            ',' => TokenKind::Delimiter(Delimiter::Comma),
+            ';' => TokenKind::Delimiter(Delimiter::SemiColon),
+            '(' => TokenKind::Delimiter(Delimiter::LeftParenthesis),
+            ')' => TokenKind::Delimiter(Delimiter::RightParenthesis),
+            '{' => TokenKind::Delimiter(Delimiter::LeftBrace),
+            '}' => TokenKind::Delimiter(Delimiter::RightBrace),
+            _ => TokenKind::Invalid,
+        }
+    }
 }

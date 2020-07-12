@@ -1,7 +1,7 @@
 use super::*;
 
 #[test]
-fn lexer_can_read_tokens() {
+fn lexer_can_read_delimiter() {
     let lexer = Lexer::from(input());
 
     lexer
@@ -11,41 +11,34 @@ fn lexer_can_read_tokens() {
 }
 
 fn input() -> String {
-    String::from("=+(){},;")
+    String::from("(){},;")
 }
 
 fn expected_tokens() -> Vec<Token> {
+    use tokens::kind::Delimiter::*;
     vec![
         Token {
-            kind: TokenKind::Assignment,
-            literal: String::from("="),
-        },
-        Token {
-            kind: TokenKind::Plus,
-            literal: String::from("+"),
-        },
-        Token {
-            kind: TokenKind::LeftParenthesis,
+            kind: TokenKind::Delimiter(LeftParenthesis),
             literal: String::from("("),
         },
         Token {
-            kind: TokenKind::RightParenthesis,
+            kind: TokenKind::Delimiter(RightParenthesis),
             literal: String::from(")"),
         },
         Token {
-            kind: TokenKind::LeftBrace,
+            kind: TokenKind::Delimiter(LeftBrace),
             literal: String::from("{"),
         },
         Token {
-            kind: TokenKind::RightBrace,
+            kind: TokenKind::Delimiter(RightBrace),
             literal: String::from("}"),
         },
         Token {
-            kind: TokenKind::Comma,
+            kind: TokenKind::Delimiter(Comma),
             literal: String::from(","),
         },
         Token {
-            kind: TokenKind::Semicolon,
+            kind: TokenKind::Delimiter(SemiColon),
             literal: String::from(";"),
         },
     ]

@@ -8,41 +8,10 @@ pub struct Token {
 }
 
 impl Token {
-    pub fn from_symbol(symbol: char) -> Self {
-        match symbol {
-            '=' => Self {
-                kind: TokenKind::Assignment,
-                literal: String::from("="),
-            },
-            '+' => Self {
-                kind: TokenKind::Plus,
-                literal: String::from("+"),
-            },
-            ';' => Self {
-                kind: TokenKind::Semicolon,
-                literal: String::from(";"),
-            },
-            ',' => Self {
-                kind: TokenKind::Comma,
-                literal: String::from(","),
-            },
-            '(' => Self {
-                kind: TokenKind::LeftParenthesis,
-                literal: String::from("("),
-            },
-            ')' => Self {
-                kind: TokenKind::RightParenthesis,
-                literal: String::from(")"),
-            },
-            '{' => Self {
-                kind: TokenKind::LeftBrace,
-                literal: String::from("{"),
-            },
-            '}' => Self {
-                kind: TokenKind::RightBrace,
-                literal: String::from("}"),
-            },
-            invalid_symbol => Self::invalid_with_literal(invalid_symbol.to_string()),
+    pub fn from_delimiter(delimiter: char) -> Self {
+        Self {
+            kind: TokenKind::from_delimiter(delimiter),
+            literal: delimiter.to_string(),
         }
     }
 
