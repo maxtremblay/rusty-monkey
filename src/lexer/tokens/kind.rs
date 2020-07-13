@@ -47,4 +47,12 @@ impl TokenKind {
             _ => TokenKind::Invalid,
         }
     }
+
+    pub fn from_operator(operator: &str) -> Self {
+        match operator {
+            "=" => TokenKind::Operator(Operator::Assignment),
+            "+" => TokenKind::Operator(Operator::Plus),
+            _ => TokenKind::Invalid,
+        }
+    }
 }

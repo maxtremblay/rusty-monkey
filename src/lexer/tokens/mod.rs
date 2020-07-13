@@ -15,6 +15,13 @@ impl Token {
         }
     }
 
+    pub fn from_operator(operator: String) -> Self {
+        Self {
+            kind: TokenKind::from_operator(&operator),
+            literal: operator,
+        }
+    }
+
     pub fn invalid_with_literal(literal: String) -> Self {
         Self {
             kind: TokenKind::Invalid,
