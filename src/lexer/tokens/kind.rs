@@ -5,7 +5,7 @@ pub enum TokenKind {
     Invalid,
     Keyword(Keyword),
     Literal(Literal),
-    Operators(Operators),
+    Operator(Operator),
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
@@ -30,8 +30,8 @@ pub enum Literal {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
-pub enum Operators {
-    Assignement,
+pub enum Operator {
+    Assignment,
     Plus,
 }
 
