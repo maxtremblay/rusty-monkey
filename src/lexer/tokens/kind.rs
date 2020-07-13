@@ -51,7 +51,28 @@ impl Keyword {
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
 pub enum Operator {
     Assignment,
+    Asterix,
+    Bang,
+    GreaterThan,
+    LessThan,
+    Minus,
     Plus,
+    Slash,
+}
+
+impl Operator {
+    pub fn all() -> HashSet<String> {
+        let mut operators = HashSet::with_capacity(8);
+        operators.insert(String::from("="));
+        operators.insert(String::from("*"));
+        operators.insert(String::from("!"));
+        operators.insert(String::from(">"));
+        operators.insert(String::from("<"));
+        operators.insert(String::from("-"));
+        operators.insert(String::from("+"));
+        operators.insert(String::from("/"));
+        operators
+    }
 }
 
 impl TokenKind {
@@ -78,7 +99,13 @@ impl TokenKind {
     pub fn from_operator(operator: &str) -> Self {
         match operator {
             "=" => TokenKind::Operator(Operator::Assignment),
+            "*" => TokenKind::Operator(Operator::Asterix),
+            "!" => TokenKind::Operator(Operator::Bang),
+            ">" => TokenKind::Operator(Operator::GreaterThan),
+            "<" => TokenKind::Operator(Operator::LessThan),
+            "-" => TokenKind::Operator(Operator::Minus),
             "+" => TokenKind::Operator(Operator::Plus),
+            "/" => TokenKind::Operator(Operator::Slash),
             _ => TokenKind::Invalid,
         }
     }

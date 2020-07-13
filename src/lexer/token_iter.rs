@@ -7,6 +7,7 @@ pub struct TokenIter<'a> {
     input: Peekable<Chars<'a>>,
     delimiters: &'a HashSet<char>,
     keywords: &'a HashSet<String>,
+    operators: &'a HashSet<String>,
 }
 
 impl<'a> From<&'a Lexer> for TokenIter<'a> {
@@ -15,6 +16,7 @@ impl<'a> From<&'a Lexer> for TokenIter<'a> {
             input: lexer.input.chars().peekable(),
             delimiters: &lexer.delimiters,
             keywords: &lexer.keywords,
+            operators: &lexer.operators,
         }
     }
 }
@@ -26,7 +28,7 @@ impl<'a> Iterator for TokenIter<'a> {
         self.skip_whitespaces();
         self.input.next().map(|character| match character {
             c if self.is_delimiter(c) => Token::from_delimiter(c),
-            c if Self::is_operator(c) => Token::from_operator(c.to_string()),
+            c if self.is_operator(&c.to_string()) => Token::from_operator(c.to_string()),
             c if Self::is_valid_in_identifiers_and_keywords(c) => {
                 self.read_identifier_or_keyword_starting_with(c)
             }
@@ -54,8 +56,8 @@ impl<'a> TokenIter<'a> {
         self.keywords.contains(literal)
     }
 
-    fn is_operator(c: char) -> bool {
-        vec!['=', '+'].contains(&c)
+    fn is_operator(&self, literal: &str) -> bool {
+        self.operators.contains(literal)
     }
 
     fn is_valid_in_identifiers_and_keywords(c: char) -> bool {

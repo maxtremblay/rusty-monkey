@@ -59,4 +59,8 @@ impl Token {
     pub fn keywords() -> HashSet<String> {
         kind::Keyword::all()
     }
+
+    pub fn operators() -> HashSet<String> {
+        kind::Operator::all()
+    }
 }

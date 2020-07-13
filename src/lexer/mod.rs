@@ -13,6 +13,7 @@ pub struct Lexer {
     input: String,
     delimiters: HashSet<char>,
     keywords: HashSet<String>,
+    operators: HashSet<String>,
 }
 
 impl From<String> for Lexer {
@@ -21,6 +22,7 @@ impl From<String> for Lexer {
             input,
             delimiters: Token::delimiters(),
             keywords: Token::keywords(),
+            operators: Token::operators(),
         }
     }
 }
