@@ -27,7 +27,6 @@ fn input() -> String {
 fn expected_tokens() -> Vec<Token> {
     use tokens::kind::Delimiter::*;
     use tokens::kind::Keyword::*;
-    use tokens::kind::Literal::*;
     use tokens::kind::Operator::*;
     vec![
         Token {
@@ -43,7 +42,7 @@ fn expected_tokens() -> Vec<Token> {
             literal: String::from("="),
         },
         Token {
-            kind: TokenKind::Literal(Integer),
+            kind: TokenKind::Number,
             literal: String::from("5"),
         },
         Token {
@@ -63,7 +62,7 @@ fn expected_tokens() -> Vec<Token> {
             literal: String::from("="),
         },
         Token {
-            kind: TokenKind::Literal(Integer),
+            kind: TokenKind::Number,
             literal: String::from("10"),
         },
         Token {
@@ -121,6 +120,14 @@ fn expected_tokens() -> Vec<Token> {
         Token {
             kind: TokenKind::Identifier,
             literal: String::from("y"),
+        },
+        Token {
+            kind: TokenKind::Delimiter(SemiColon),
+            literal: String::from(";"),
+        },
+        Token {
+            kind: TokenKind::Delimiter(RightBrace),
+            literal: String::from("}"),
         },
         Token {
             kind: TokenKind::Delimiter(SemiColon),

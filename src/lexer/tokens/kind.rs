@@ -1,10 +1,12 @@
+use std::collections::HashSet;
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
 pub enum TokenKind {
     Delimiter(Delimiter),
     Identifier,
     Invalid,
     Keyword(Keyword),
-    Literal(Literal),
+    Number,
     Operator(Operator),
 }
 
@@ -18,15 +20,32 @@ pub enum Delimiter {
     RightBrace,
 }
 
+impl Delimiter {
+    pub fn all() -> HashSet<char> {
+        let mut delimiters = HashSet::with_capacity(6);
+        delimiters.insert(',');
+        delimiters.insert(';');
+        delimiters.insert('(');
+        delimiters.insert(')');
+        delimiters.insert('{');
+        delimiters.insert('}');
+        delimiters
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
 pub enum Keyword {
     Function,
     Let,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
-pub enum Literal {
-    Integer,
+impl Keyword {
+    pub fn all() -> HashSet<String> {
+        let mut keywords = HashSet::with_capacity(2);
+        keywords.insert(String::from("fn"));
+        keywords.insert(String::from("let"));
+        keywords
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
@@ -44,6 +63,14 @@ impl TokenKind {
             ')' => TokenKind::Delimiter(Delimiter::RightParenthesis),
             '{' => TokenKind::Delimiter(Delimiter::LeftBrace),
             '}' => TokenKind::Delimiter(Delimiter::RightBrace),
+            _ => TokenKind::Invalid,
+        }
+    }
+
+    pub fn from_keyword(keyword: &str) -> Self {
+        match keyword {
+            "fn" => TokenKind::Keyword(Keyword::Function),
+            "let" => TokenKind::Keyword(Keyword::Let),
             _ => TokenKind::Invalid,
         }
     }
