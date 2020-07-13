@@ -35,15 +35,25 @@ impl Delimiter {
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
 pub enum Keyword {
+    Else,
+    False,
     Function,
+    If,
     Let,
+    Return,
+    True,
 }
 
 impl Keyword {
     pub fn all() -> HashSet<String> {
-        let mut keywords = HashSet::with_capacity(2);
+        let mut keywords = HashSet::with_capacity(7);
+        keywords.insert(String::from("else"));
+        keywords.insert(String::from("false"));
         keywords.insert(String::from("fn"));
+        keywords.insert(String::from("if"));
         keywords.insert(String::from("let"));
+        keywords.insert(String::from("return"));
+        keywords.insert(String::from("true"));
         keywords
     }
 }
@@ -91,7 +101,12 @@ impl TokenKind {
     pub fn from_keyword(keyword: &str) -> Self {
         match keyword {
             "fn" => TokenKind::Keyword(Keyword::Function),
+            "else" => TokenKind::Keyword(Keyword::Else),
+            "false" => TokenKind::Keyword(Keyword::False),
+            "if" => TokenKind::Keyword(Keyword::If),
             "let" => TokenKind::Keyword(Keyword::Let),
+            "return" => TokenKind::Keyword(Keyword::Return),
+            "true" => TokenKind::Keyword(Keyword::True),
             _ => TokenKind::Invalid,
         }
     }

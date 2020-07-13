@@ -5,11 +5,6 @@ fn lexer_can_read_simple_program() {
     test_lexer(simple_program(), expected_tokens_for_simple_program());
 }
 
-#[test]
-fn lexer_can_read_weird_program() {
-    test_lexer(weird_program(), expected_tokens_for_weird_program());
-}
-
 fn test_lexer(input: String, expected_tokens: Vec<Token>) {
     let lexer = Lexer::from(input);
     lexer
@@ -29,15 +24,15 @@ fn simple_program() -> String {
         };
 
         let result = add(five, ten);
-        ",
-    )
-}
 
-fn weird_program() -> String {
-    String::from(
-        "
         !-/*5;
         5 < 10 > 6;
+
+        if (5 < 10) {
+            return true;
+        } else {
+            return false;
+        }
         ",
     )
 }
@@ -80,11 +75,6 @@ fn expected_tokens_for_simple_program() -> Vec<Token> {
         Token::from_identifier("ten".to_string()),
         Token::from_delimiter(')'),
         Token::from_delimiter(';'),
-    ]
-}
-
-fn expected_tokens_for_weird_program() -> Vec<Token> {
-    vec![
         Token::from_operator("!".to_string()),
         Token::from_operator("-".to_string()),
         Token::from_operator("/".to_string()),
@@ -97,5 +87,22 @@ fn expected_tokens_for_weird_program() -> Vec<Token> {
         Token::from_operator(">".to_string()),
         Token::from_number("6".to_string()),
         Token::from_delimiter(';'),
+        Token::from_keyword("if".to_string()),
+        Token::from_delimiter('('),
+        Token::from_number("5".to_string()),
+        Token::from_operator("<".to_string()),
+        Token::from_number("10".to_string()),
+        Token::from_delimiter(')'),
+        Token::from_delimiter('{'),
+        Token::from_keyword("return".to_string()),
+        Token::from_keyword("true".to_string()),
+        Token::from_delimiter(';'),
+        Token::from_delimiter('}'),
+        Token::from_keyword("else".to_string()),
+        Token::from_delimiter('{'),
+        Token::from_keyword("return".to_string()),
+        Token::from_keyword("false".to_string()),
+        Token::from_delimiter(';'),
+        Token::from_delimiter('}'),
     ]
 }
