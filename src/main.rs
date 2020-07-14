@@ -1,5 +1,8 @@
 mod lexer;
+mod repl;
+
+use repl::ReadEvalPrintLoop;
 
 fn main() {
-    println!("Hello, world!");
+    ReadEvalPrintLoop::start().run();
 }
