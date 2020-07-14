@@ -3,6 +3,7 @@ use std::collections::HashSet;
 use std::iter::Peekable;
 use std::str::Chars;
 
+#[derive(Debug, Clone)]
 pub struct TokenIter<'a> {
     input: Peekable<Chars<'a>>,
     delimiters: &'a HashSet<char>,

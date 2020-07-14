@@ -1,0 +1,20 @@
+use super::{Parser, Statement};
+use crate::lexer::TokenIter;
+use std::iter::Peekable;
+
+#[derive(Debug)]
+pub struct StatementIter<'a> {
+    tokens: Peekable<TokenIter<'a>>,
+}
+
+impl<'a> From<&'a Parser<'a>> for StatementIter<'a> {
+    fn from(parser: &'a Parser) -> Self {
+        Self {
+            tokens: parser.lexer.tokens().peekable(),
+        }
+    }
+}
+
+impl<'a> Iterator for StatementIter<'a> {
+    type Item = Statement;
+}

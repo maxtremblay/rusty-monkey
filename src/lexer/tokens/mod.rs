@@ -5,8 +5,8 @@ use std::collections::HashSet;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Token {
-    pub(super) kind: TokenKind,
-    pub(super) literal: String,
+    pub(crate) kind: TokenKind,
+    pub(crate) literal: String,
 }
 
 impl Token {
