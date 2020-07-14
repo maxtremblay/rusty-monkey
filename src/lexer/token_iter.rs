@@ -62,8 +62,6 @@ impl<'a> TokenIter<'a> {
 
     fn read_operator_starting_with(&mut self, start: char) -> Token {
         if let Some(c) = self.input.peek() {
-            let mut operator = start.to_string();
-            operator.push(*c);
             let operator = format!("{}{}", start, c);
             if self.is_operator(&operator) {
                 self.input.next();
