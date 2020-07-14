@@ -1,9 +1,5 @@
-use super::ast::nodes::Identifier;
-use super::{
-    ast::nodes,
-    ast::{Expression, Statement},
-    Parser,
-};
+use super::ast_nodes;
+use super::{Expression, Parser, Statement};
 use crate::lexer::tokens::kind::{Delimiter, Keyword, Operator};
 use crate::lexer::{Token, TokenIter, TokenKind};
 use std::iter::Peekable;
@@ -39,7 +35,7 @@ impl<'a> StatementIter<'a> {
         let identifier = self.parse_next_identifier()?;
         self.skip_next_token_if(TokenKind::Operator(Operator::Assignment))?;
         let expression = self.parse_next_expression()?;
-        let statement = nodes::LetStatement {
+        let statement = ast_nodes::LetStatement {
             token: let_token,
             identifier,
             expression,
@@ -47,11 +43,11 @@ impl<'a> StatementIter<'a> {
         Ok(Statement::Let(statement))
     }
 
-    fn parse_next_identifier(&mut self) -> ParsingResult<Identifier> {
+    fn parse_next_identifier(&mut self) -> ParsingResult<ast_nodes::Identifier> {
         let token = self.peek_next_token()?;
         if let TokenKind::Identifier = token.kind {
             let token = self.tokens.next().unwrap();
-            Ok(Identifier::from(token))
+            Ok(ast_nodes::Identifier::from(token))
         } else {
             self.skip_until(TokenKind::Delimiter(Delimiter::SemiColon))?;
             Err(MissingIdentifier)

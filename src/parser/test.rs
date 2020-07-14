@@ -1,5 +1,5 @@
-use super::ast::{Node, Statement};
 use super::*;
+use super::{Node, Statement};
 
 #[test]
 fn parsing_let_statements() {

@@ -1,5 +1,5 @@
-pub mod ast;
-//use ast::Program;
+pub mod ast_nodes;
+pub use ast_nodes::{Expression, Node, Statement};
 
 pub mod statement_iter;
 pub use statement_iter::{ParsingError, ParsingResult, StatementIter};
