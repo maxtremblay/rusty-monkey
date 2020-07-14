@@ -32,7 +32,46 @@ fn expected_identifiers_for_let_statements() -> Vec<String> {
     vec!["x".to_string(), "y".to_string(), "foobar".to_string()]
 }
 
-fn test_let_statement(Statement::Let(statement): Statement, expected_identifier: String) {
-    assert_eq!(statement.token_literal(), "let");
-    assert_eq!(statement.identifier.token_literal(), expected_identifier)
+fn test_let_statement(statement: Statement, expected_identifier: String) {
+    if let Statement::Let(statement) = statement {
+        assert_eq!(statement.token_literal(), "let");
+        assert_eq!(statement.identifier.token_literal(), expected_identifier)
+    } else {
+        panic!("not a let statement");
+    }
+}
+
+#[test]
+fn parsing_return_statements() {
+    let parser = Parser::from(return_statements());
+    let program: Vec<ParsingResult<Statement>> = parser.statements().collect();
+
+    assert_eq!(program.len(), 4);
+
+    assert_eq!(program[3], Err(ParsingError::InvalidExpression));
+
+    program
+        .into_iter()
+        .take(3)
+        .for_each(|statement| test_return_statement(statement.unwrap()));
+}
+
+fn return_statements() -> Lexer {
+    let input = String::from(
+        "
+        return 5;
+        return 10;
+        return 838383;
+        return
+        ",
+    );
+    Lexer::from(input)
+}
+
+fn test_return_statement(statement: Statement) {
+    if let Statement::Return(statement) = statement {
+        assert_eq!(statement.token_literal(), "return");
+    } else {
+        panic!("not a return statement");
+    }
 }

@@ -25,29 +25,36 @@ impl<'a> Iterator for StatementIter<'a> {
     fn next(&mut self) -> Option<Self::Item> {
         self.tokens.next().map(|token| match token.kind {
             TokenKind::Keyword(Keyword::Let) => self.parse_let_statement(token),
+            TokenKind::Keyword(Keyword::Return) => self.parse_return_statement(token),
             _ => Err(NotAStatement),
         })
     }
 }
 
 impl<'a> StatementIter<'a> {
-    fn parse_let_statement(&mut self, let_token: Token) -> ParsingResult<Statement> {
+    fn parse_let_statement(&mut self, token: Token) -> ParsingResult<Statement> {
         let identifier = self.parse_next_identifier()?;
         self.skip_next_token_if(TokenKind::Operator(Operator::Assignment))?;
         let expression = self.parse_next_expression()?;
         let statement = ast_nodes::LetStatement {
-            token: let_token,
+            token,
             identifier,
             expression,
         };
         Ok(Statement::Let(statement))
     }
 
+    fn parse_return_statement(&mut self, token: Token) -> ParsingResult<Statement> {
+        let expression = self.parse_next_expression()?;
+        let statement = ast_nodes::ReturnStatement { token, expression };
+        Ok(Statement::Return(statement))
+    }
+
     fn parse_next_identifier(&mut self) -> ParsingResult<ast_nodes::Identifier> {
         let token = self.peek_next_token()?;
         if let TokenKind::Identifier = token.kind {
             let token = self.tokens.next().unwrap();
-            Ok(ast_nodes::Identifier::from(token))
+            Ok(ast_nodes::Identifier { token })
         } else {
             self.skip_until(TokenKind::Delimiter(Delimiter::SemiColon))?;
             Err(MissingIdentifier)
