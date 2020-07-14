@@ -28,7 +28,7 @@ impl<'a> Iterator for TokenIter<'a> {
         self.skip_whitespaces();
         self.input.next().map(|character| match character {
             c if self.is_delimiter(c) => Token::from_delimiter(c),
-            c if self.is_operator(&c.to_string()) => Token::from_operator(c.to_string()),
+            c if self.is_operator(&c.to_string()) => self.read_operator_starting_with(c),
             c if Self::is_valid_in_identifiers_and_keywords(c) => {
                 self.read_identifier_or_keyword_starting_with(c)
             }
@@ -58,6 +58,19 @@ impl<'a> TokenIter<'a> {
 
     fn is_operator(&self, literal: &str) -> bool {
         self.operators.contains(literal)
+    }
+
+    fn read_operator_starting_with(&mut self, start: char) -> Token {
+        if let Some(c) = self.input.peek() {
+            let mut operator = start.to_string();
+            operator.push(*c);
+            let operator = format!("{}{}", start, c);
+            if self.is_operator(&operator) {
+                self.input.next();
+                return Token::from_operator(operator);
+            }
+        }
+        Token::from_operator(start.to_string())
     }
 
     fn is_valid_in_identifiers_and_keywords(c: char) -> bool {

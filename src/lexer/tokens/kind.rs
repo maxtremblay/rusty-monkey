@@ -63,22 +63,26 @@ pub enum Operator {
     Assignment,
     Asterix,
     Bang,
+    Equal,
     GreaterThan,
     LessThan,
     Minus,
+    NotEqual,
     Plus,
     Slash,
 }
 
 impl Operator {
     pub fn all() -> HashSet<String> {
-        let mut operators = HashSet::with_capacity(8);
+        let mut operators = HashSet::with_capacity(10);
         operators.insert(String::from("="));
         operators.insert(String::from("*"));
         operators.insert(String::from("!"));
+        operators.insert(String::from("=="));
         operators.insert(String::from(">"));
         operators.insert(String::from("<"));
         operators.insert(String::from("-"));
+        operators.insert(String::from("!="));
         operators.insert(String::from("+"));
         operators.insert(String::from("/"));
         operators
@@ -116,9 +120,11 @@ impl TokenKind {
             "=" => TokenKind::Operator(Operator::Assignment),
             "*" => TokenKind::Operator(Operator::Asterix),
             "!" => TokenKind::Operator(Operator::Bang),
+            "==" => TokenKind::Operator(Operator::Equal),
             ">" => TokenKind::Operator(Operator::GreaterThan),
             "<" => TokenKind::Operator(Operator::LessThan),
             "-" => TokenKind::Operator(Operator::Minus),
+            "!=" => TokenKind::Operator(Operator::NotEqual),
             "+" => TokenKind::Operator(Operator::Plus),
             "/" => TokenKind::Operator(Operator::Slash),
             _ => TokenKind::Invalid,

@@ -33,6 +33,9 @@ fn simple_program() -> String {
         } else {
             return false;
         }
+
+        10 == 10;
+        10 != 9;
         ",
     )
 }
@@ -104,5 +107,13 @@ fn expected_tokens_for_simple_program() -> Vec<Token> {
         Token::from_keyword("false".to_string()),
         Token::from_delimiter(';'),
         Token::from_delimiter('}'),
+        Token::from_number("10".to_string()),
+        Token::from_operator("==".to_string()),
+        Token::from_number("10".to_string()),
+        Token::from_delimiter(';'),
+        Token::from_number("10".to_string()),
+        Token::from_operator("!=".to_string()),
+        Token::from_number("9".to_string()),
+        Token::from_delimiter(';'),
     ]
 }
