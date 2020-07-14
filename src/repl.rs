@@ -1,4 +1,5 @@
-use crate::lexer::{Lexer, Token};
+use crate::lexer::Lexer;
+use crate::parser::{Parser, ParsingResult, Statement};
 use std::io;
 use std::io::Write;
 
@@ -15,17 +16,17 @@ impl ReadEvalPrintLoop {
         loop {
             self.print_prompt();
             match self.read() {
-                Ok(tokens) => Self::print_tokens(tokens),
+                Ok(statements) => Self::print_statements(statements),
                 Err(error) => println!("error: {}", error),
             }
         }
     }
 
-    fn read(&self) -> io::Result<Vec<Token>> {
+    fn read(&self) -> io::Result<Vec<ParsingResult<Statement>>> {
         let mut input = String::new();
         io::stdin().read_line(&mut input)?;
-        let tokens = Lexer::from(input).tokens().collect();
-        Ok(tokens)
+        let statements = Parser::from(Lexer::from(input)).statements().collect();
+        Ok(statements)
     }
 
     fn print_prompt(&self) {
@@ -33,9 +34,12 @@ impl ReadEvalPrintLoop {
         io::stdout().flush().unwrap();
     }
 
-    fn print_tokens(tokens: Vec<Token>) {
-        for token in tokens {
-            println!("{:?}", token);
+    fn print_statements(statements: Vec<ParsingResult<Statement>>) {
+        for statement in statements {
+            match statement {
+                Ok(statement) => println!("{}", statement),
+                Err(error) => println!("Error: {:?}", error),
+            }
         }
     }
 }

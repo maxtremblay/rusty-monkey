@@ -35,7 +35,9 @@ impl<'a> StatementIter<'a> {
     fn parse_let_statement(&mut self, token: Token) -> ParsingResult<Statement> {
         let identifier = self.parse_next_identifier()?;
         self.skip_next_token_if(TokenKind::Operator(Operator::Assignment))?;
-        let expression = self.parse_next_expression()?;
+        let expression =
+            self.parse_next_expression_until(TokenKind::Delimiter(Delimiter::SemiColon))?;
+        self.skip_semi_colon()?;
         let statement = ast_nodes::LetStatement {
             token,
             identifier,
@@ -45,7 +47,9 @@ impl<'a> StatementIter<'a> {
     }
 
     fn parse_return_statement(&mut self, token: Token) -> ParsingResult<Statement> {
-        let expression = self.parse_next_expression()?;
+        let expression =
+            self.parse_next_expression_until(TokenKind::Delimiter(Delimiter::SemiColon))?;
+        self.skip_semi_colon()?;
         let statement = ast_nodes::ReturnStatement { token, expression };
         Ok(Statement::Return(statement))
     }
@@ -69,13 +73,18 @@ impl<'a> StatementIter<'a> {
         Ok(())
     }
 
-    fn parse_next_expression(&mut self) -> ParsingResult<Expression> {
-        while let Some(token) = self.tokens.next() {
-            if let TokenKind::Delimiter(Delimiter::SemiColon) = token.kind {
+    fn skip_semi_colon(&mut self) -> ParsingResult<()> {
+        self.skip_next_token_if(TokenKind::Delimiter(Delimiter::SemiColon))
+    }
+
+    fn parse_next_expression_until(&mut self, kind: TokenKind) -> ParsingResult<Expression> {
+        while let Some(token) = self.tokens.peek() {
+            if token.kind == kind {
                 return Ok(Expression::Empty);
             }
+            self.tokens.next();
         }
-        Err(InvalidExpression)
+        Err(ReachEndOfFile)
     }
 
     fn peek_next_token(&mut self) -> ParsingResult<&Token> {

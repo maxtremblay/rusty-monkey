@@ -20,7 +20,7 @@ macro_rules! create_node {
         crate::impl_node!($name);
     };
 
-    ($name:ident with $($field:ident: $type:ident),+ $(,)?) => {
+    ($name:ident {$($field:ident: $type:ident),+ $(,)?}) => {
         #[derive(Debug, PartialEq, Eq)]
         pub struct $name {
             pub token: Token,

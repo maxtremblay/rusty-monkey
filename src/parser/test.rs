@@ -48,7 +48,7 @@ fn parsing_return_statements() {
 
     assert_eq!(program.len(), 4);
 
-    assert_eq!(program[3], Err(ParsingError::InvalidExpression));
+    assert_eq!(program[3], Err(ParsingError::ReachEndOfFile));
 
     program
         .into_iter()
