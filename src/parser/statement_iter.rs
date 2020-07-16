@@ -1,20 +1,25 @@
 use super::ast_nodes;
 use super::{Expression, Parser, Statement};
+use super::{InfixParsingFunction, PrefixParsingFunction};
 use crate::lexer::tokens::kind::{Delimiter, Keyword, Operator};
 use crate::lexer::{Token, TokenIter, TokenKind};
+use std::collections::HashMap;
 use std::iter::Peekable;
 
 use ParsingError::*;
 
-#[derive(Debug)]
 pub struct StatementIter<'a> {
     tokens: Peekable<TokenIter<'a>>,
+    infix_parsing_functions: &'a HashMap<TokenKind, InfixParsingFunction>,
+    prefix_parsing_functions: &'a HashMap<TokenKind, PrefixParsingFunction>,
 }
 
 impl<'a> From<&'a Parser> for StatementIter<'a> {
     fn from(parser: &'a Parser) -> Self {
         Self {
             tokens: parser.lexer.tokens().peekable(),
+            infix_parsing_functions: &parser.infix_parsing_functions,
+            prefix_parsing_functions: &parser.prefix_parsing_functions,
         }
     }
 }
@@ -69,8 +74,10 @@ impl<'a> StatementIter<'a> {
         let token = self.peek_next_token()?;
         if token.kind == kind {
             self.tokens.next();
+            Ok(())
+        } else {
+            Err(MissingToken)
         }
-        Ok(())
     }
 
     fn skip_semi_colon(&mut self) -> ParsingResult<()> {
@@ -105,9 +112,8 @@ pub type ParsingResult<T> = Result<T, ParsingError>;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
 pub enum ParsingError {
-    MissingAssignement,
+    MissingToken,
     MissingIdentifier,
-    InvalidExpression,
     NotAStatement,
     ReachEndOfFile,
 }
