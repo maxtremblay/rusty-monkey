@@ -75,3 +75,34 @@ fn test_return_statement(statement: Statement) {
         panic!("not a return statement");
     }
 }
+
+#[test]
+fn parsing_identifier_expression() {
+    let parser = Parser::from(identifier_expression());
+    let program: Vec<ParsingResult<Statement>> = parser.statements().collect();
+
+    assert_eq!(program.len(), 1);
+    let statement = program[0].as_ref().unwrap();
+    test_identifier_expression(statement);
+}
+
+fn identifier_expression() -> Lexer {
+    let input = String::from(
+        "
+        foobar;
+        ",
+    );
+    Lexer::from(input)
+}
+
+fn test_identifier_expression(statement: &Statement) {
+    if let Statement::Expression(expression) = statement {
+        if let Expression::Identifier(identifier) = &expression.expression {
+            assert_eq!(identifier.token_literal(), "foobar");
+        } else {
+            panic!("not an identifier");
+        }
+    } else {
+        panic!("not an expression");
+    }
+}

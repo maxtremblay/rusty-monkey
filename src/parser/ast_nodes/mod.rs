@@ -28,6 +28,18 @@ impl std::fmt::Display for Statement {
 #[derive(Debug, PartialEq, Eq)]
 pub enum Expression {
     Empty,
+    Identifier(Identifier),
+}
+
+impl std::fmt::Display for Expression {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "Expression[")?;
+        match self {
+            Self::Empty => {}
+            Self::Identifier(identifier) => write!(f, "{}", identifier)?,
+        }
+        write!(f, "]")
+    }
 }
 
 create_node!(ExpressionStatement {
