@@ -106,3 +106,30 @@ fn test_identifier_expression(statement: &Statement) {
         panic!("not an expression");
     }
 }
+
+#[test]
+fn parsing_number_expression() {
+    let parser = Parser::from(number_expression());
+    let program: Vec<ParsingResult<Statement>> = parser.statements().collect();
+
+    assert_eq!(program.len(), 1);
+    let statement = program[0].as_ref().unwrap();
+    test_number_expression(statement);
+}
+
+fn number_expression() -> Lexer {
+    let input = String::from("5;");
+    Lexer::from(input)
+}
+
+fn test_number_expression(statement: &Statement) {
+    if let Statement::Expression(expression) = statement {
+        if let Expression::IntegerLiteral(integer) = &expression.expression {
+            assert_eq!(integer.token_literal(), "5");
+        } else {
+            panic!("not an number");
+        }
+    } else {
+        panic!("not an expression");
+    }
+}

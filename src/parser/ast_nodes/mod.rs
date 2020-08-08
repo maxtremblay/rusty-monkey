@@ -29,6 +29,7 @@ impl std::fmt::Display for Statement {
 pub enum Expression {
     Empty,
     Identifier(Identifier),
+    IntegerLiteral(IntegerLiteral),
 }
 
 impl std::fmt::Display for Expression {
@@ -37,6 +38,7 @@ impl std::fmt::Display for Expression {
         match self {
             Self::Empty => {}
             Self::Identifier(identifier) => write!(f, "{}", identifier)?,
+            Self::IntegerLiteral(integer) => write!(f, "{}", integer)?,
         }
         write!(f, "]")
     }
@@ -57,6 +59,14 @@ create_node!(Identifier);
 impl std::fmt::Display for Identifier {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f, "Identifier[{}]", self.token_literal())
+    }
+}
+
+create_node!(IntegerLiteral { value: i64 });
+
+impl std::fmt::Display for IntegerLiteral {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{}", self.value)
     }
 }
 

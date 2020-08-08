@@ -1,5 +1,5 @@
 use super::ast_nodes;
-use super::parsing_functions::{infix_parsing_function_of, prefix_parsing_function_of};
+use super::parsing_functions::ParsingFunctions;
 use super::{Expression, Parser, Precedence, Statement};
 use crate::lexer::tokens::kind::{Delimiter, Keyword, Operator};
 use crate::lexer::{Token, TokenIter, TokenKind};
@@ -9,6 +9,7 @@ use ParsingError::*;
 
 pub struct StatementIter<'a> {
     tokens: Peekable<TokenIter<'a>>,
+    parsing_functions: &'a ParsingFunctions,
     current: Option<Token>,
 }
 
@@ -16,6 +17,7 @@ impl<'a> From<&'a Parser> for StatementIter<'a> {
     fn from(parser: &'a Parser) -> Self {
         Self {
             tokens: parser.lexer.tokens().peekable(),
+            parsing_functions: &parser.parsing_functions,
             current: None,
         }
     }
@@ -131,7 +133,7 @@ impl<'a> StatementIter<'a> {
     fn parse_expression(&mut self, precedence: Precedence) -> ParsingResult<Expression> {
         self.peek_current_token()
             .as_ref()
-            .and_then(|token| prefix_parsing_function_of(token.kind))
+            .and_then(|token| self.parsing_functions.prefix.get(&token.kind))
             .ok_or(ParsingError::InvalidExpression)
             .and_then(|prefix| prefix(self))
     }
