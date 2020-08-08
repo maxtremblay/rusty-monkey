@@ -130,7 +130,11 @@ impl<'a> StatementIter<'a> {
         Err(ReachEndOfFile)
     }
 
-    fn parse_expression(&mut self, precedence: Precedence) -> ParsingResult<Expression> {
+    pub(super) fn advance_token(&mut self) {
+        self.current = self.tokens.next();
+    }
+
+    pub(super) fn parse_expression(&mut self, precedence: Precedence) -> ParsingResult<Expression> {
         self.peek_current_token()
             .as_ref()
             .and_then(|token| self.parsing_functions.prefix.get(&token.kind))

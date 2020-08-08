@@ -1,7 +1,9 @@
-use super::ast_nodes::{Identifier, IntegerLiteral};
+use super::ast_nodes::{Identifier, Number, PrefixOperator};
+use super::Precedence;
 use super::{Expression, StatementIter};
 use super::{ParsingError, ParsingResult};
-use crate::lexer::TokenKind;
+use crate::lexer::tokens::kind::Operator;
+use crate::lexer::{Token, TokenKind};
 use std::collections::HashMap;
 
 pub type InfixParsingFunction =
@@ -27,41 +29,63 @@ impl ParsingFunctions {
 
     fn generate_prefix_functions() -> HashMap<TokenKind, PrefixParsingFunction> {
         let mut functions = HashMap::with_capacity(2);
-        functions.insert(TokenKind::Identifier, Self::identifier_prefix());
-        functions.insert(TokenKind::Number, Self::number_prefix());
+        functions.insert(TokenKind::Identifier, Self::identifier_prefix_function());
+        functions.insert(TokenKind::Number, Self::number_prefix_function());
+        functions.insert(
+            TokenKind::Operator(Operator::Bang),
+            Self::prefix_operator_prefix_function(),
+        );
+        functions.insert(
+            TokenKind::Operator(Operator::Minus),
+            Self::prefix_operator_prefix_function(),
+        );
         functions
     }
 
-    fn identifier_prefix() -> PrefixParsingFunction {
+    fn identifier_prefix_function() -> PrefixParsingFunction {
         Box::new(|statements: &mut StatementIter| {
-            statements
-                .peek_current_token()
-                .as_ref()
-                .ok_or(ParsingError::InvalidExpression)
-                .map(|token| {
-                    Expression::Identifier(Identifier {
-                        token: token.clone(),
-                    })
+            Self::token_from_statements(statements).map(|token| {
+                Expression::Identifier(Identifier {
+                    token: token.clone(),
                 })
+            })
         })
     }
 
-    fn number_prefix() -> PrefixParsingFunction {
+    fn number_prefix_function() -> PrefixParsingFunction {
         Box::new(|statements: &mut StatementIter| {
-            statements
-                .peek_current_token()
-                .as_ref()
-                .ok_or(ParsingError::InvalidExpression)
-                .and_then(|token| {
-                    i64::from_str_radix(&token.literal, 10)
-                        .map_err(|_| ParsingError::InvalidExpression)
-                        .map(|value| {
-                            Expression::IntegerLiteral(IntegerLiteral {
-                                token: token.clone(),
-                                value,
-                            })
+            Self::token_from_statements(statements).and_then(|token| {
+                i64::from_str_radix(&token.literal, 10)
+                    .map_err(|_| ParsingError::InvalidExpression)
+                    .map(|value| {
+                        Expression::Number(Number {
+                            token: token.clone(),
+                            value,
                         })
-                })
+                    })
+            })
         })
+    }
+
+    fn prefix_operator_prefix_function() -> PrefixParsingFunction {
+        Box::new(|statements: &mut StatementIter| {
+            let token = Self::token_from_statements(statements)?;
+            let token = token.clone();
+            let operator = token.literal.clone();
+            statements.advance_token();
+            let right_expression = statements.parse_expression(Precedence::Prefix)?;
+            Ok(Expression::PrefixOperator(PrefixOperator {
+                token,
+                operator,
+                right_expression: Box::new(right_expression),
+            }))
+        })
+    }
+
+    fn token_from_statements<'a>(statements: &'a mut StatementIter) -> ParsingResult<&'a Token> {
+        statements
+            .peek_current_token()
+            .as_ref()
+            .ok_or(ParsingError::InvalidExpression)
     }
 }

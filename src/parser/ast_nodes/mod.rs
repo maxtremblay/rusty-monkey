@@ -29,7 +29,8 @@ impl std::fmt::Display for Statement {
 pub enum Expression {
     Empty,
     Identifier(Identifier),
-    IntegerLiteral(IntegerLiteral),
+    Number(Number),
+    PrefixOperator(PrefixOperator),
 }
 
 impl std::fmt::Display for Expression {
@@ -37,8 +38,7 @@ impl std::fmt::Display for Expression {
         write!(f, "Expression[")?;
         match self {
             Self::Empty => {}
-            Self::Identifier(identifier) => write!(f, "{}", identifier)?,
-            Self::IntegerLiteral(integer) => write!(f, "{}", integer)?,
+            expression => write!(f, "{}", expression)?,
         }
         write!(f, "]")
     }
@@ -62,11 +62,22 @@ impl std::fmt::Display for Identifier {
     }
 }
 
-create_node!(IntegerLiteral { value: i64 });
+create_node!(Number { value: i64 });
 
-impl std::fmt::Display for IntegerLiteral {
+impl std::fmt::Display for Number {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f, "{}", self.value)
+    }
+}
+
+create_node!(PrefixOperator {
+    operator: String,
+    right_expression: Box<Expression>,
+});
+
+impl std::fmt::Display for PrefixOperator {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "({}{})", self.operator, self.right_expression)
     }
 }
 

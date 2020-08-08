@@ -114,7 +114,12 @@ fn parsing_number_expression() {
 
     assert_eq!(program.len(), 1);
     let statement = program[0].as_ref().unwrap();
-    test_number_expression(statement);
+
+    if let Statement::Expression(expression) = statement {
+        test_number_expression(&expression.expression, 5);
+    } else {
+        panic!("not an expression");
+    }
 }
 
 fn number_expression() -> Lexer {
@@ -122,14 +127,50 @@ fn number_expression() -> Lexer {
     Lexer::from(input)
 }
 
-fn test_number_expression(statement: &Statement) {
-    if let Statement::Expression(expression) = statement {
-        if let Expression::IntegerLiteral(integer) = &expression.expression {
-            assert_eq!(integer.token_literal(), "5");
-        } else {
-            panic!("not an number");
-        }
+fn test_number_expression(expression: &Expression, expected_number: i64) {
+    if let Expression::Number(integer) = expression {
+        assert_eq!(integer.token_literal(), expected_number.to_string());
+        assert_eq!(integer.value, expected_number);
     } else {
-        panic!("not an expression");
+        panic!("not an number");
+    }
+}
+
+#[test]
+fn parsing_prefix_operator_expressions() {
+    let parser = Parser::from(prefix_operator_expressions());
+    let program: Vec<ParsingResult<Statement>> = parser.statements().collect();
+
+    assert_eq!(program.len(), 2);
+    for (statement, operator, number) in vec![(0, "!", 5), (1, "-", 15)].into_iter() {
+        let statement = program[statement].as_ref().unwrap();
+        if let Statement::Expression(expression) = statement {
+            test_prefix_operator_expressions(&expression.expression, operator, number);
+        } else {
+            panic!("not an expression");
+        }
+    }
+}
+
+fn prefix_operator_expressions() -> Lexer {
+    let input = String::from(
+        "
+        !5;
+        -15;
+        ",
+    );
+    Lexer::from(input)
+}
+
+fn test_prefix_operator_expressions(
+    expression: &Expression,
+    expected_operator: &str,
+    expected_number: i64,
+) {
+    if let Expression::PrefixOperator(operator) = expression {
+        assert_eq!(operator.operator, expected_operator);
+        test_number_expression(operator.right_expression.as_ref(), expected_number);
+    } else {
+        panic!("not a prefix operator expression");
     }
 }
